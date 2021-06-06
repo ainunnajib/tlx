@@ -1,2 +1,3 @@
-.cph/.*.prob
+*.prob
 .cph/runme*
+runme*
