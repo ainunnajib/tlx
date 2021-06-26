@@ -3,93 +3,74 @@
 #include <cstring>
 using namespace std;
 
-string ga, gb;
 int n;
-int cumA[2][100000], cumT[2][100000], cumC[2][100000];
-int diff[6][100000];
+int cum[2][3][100000];
+int diff[3][3][100000];
+
+int f(char c){
+	if(c=='A') return 0;
+	if(c=='T') return 1;
+	if(c=='C') return 2;
+	return 0;
+}
 
 void init(std::string a, std::string b) {
-	ga = a;
-	gb = b;
 	n = a.size();
 	
 	if(a[0]!=b[0]) {
-		if(a[0] == 'A') cumA[0][0]++;
-		if(b[0] == 'A') cumA[1][0]++;
-		if(a[0] == 'T') cumT[0][0]++;
-		if(b[0] == 'T') cumT[1][0]++;
-		if(a[0] == 'C') cumC[0][0]++;
-		if(b[0] == 'C') cumC[1][0]++;
+		cum[0][f(a[0])][0]++;
+		cum[1][f(b[0])][0]++;
 
-		if(a[0]=='A' && b[0]=='T') diff[0][0]++;
-		if(a[0]=='T' && b[0]=='A') diff[1][0]++;
-		if(a[0]=='A' && b[0]=='C') diff[2][0]++;
-		if(a[0]=='C' && b[0]=='A') diff[3][0]++;
-		if(a[0]=='T' && b[0]=='C') diff[4][0]++;
-		if(a[0]=='C' && b[0]=='T') diff[5][0]++;
+		diff[f(a[0])][f(b[0])][0]++;
 	}
 	for(int i=1; i<n; i++){
 		char p = a[i];
 		char q = b[i];
 
-		cumA[0][i] = cumA[0][i-1];
-		cumA[1][i] = cumA[1][i-1];
-		cumT[0][i] = cumT[0][i-1];
-		cumT[1][i] = cumT[1][i-1];
-		cumC[0][i] = cumC[0][i-1];
-		cumC[1][i] = cumC[1][i-1];
-		if(p!=q){
-			switch(p){
-				case 'A': cumA[0][i]++; break;
-				case 'T': cumT[0][i]++; break;
-				case 'C': cumC[0][i]++; break; 
-				default: break;
+		for(int k=0;k<3;k++){
+			for(int j=0;j<2;j++){
+				cum[j][k][i] = cum[j][k][i-1];
 			}
-			switch(q){
-				case 'A': cumA[1][i]++; break;
-				case 'T': cumT[1][i]++; break;
-				case 'C': cumC[1][i]++; break; 
-				default: break;
+			for(int l=0;l<3;l++){
+				diff[k][l][i] = diff[k][l][i-1];
 			}
 		}
 
-		for(int j=0; j<6; j++) diff[j][i] = diff[j][i-1];
-		if(p!=q) {
-			if(p=='A' && q=='T') diff[0][i]++;
-			if(p=='T' && q=='A') diff[1][i]++;
-			if(p=='A' && q=='C') diff[2][i]++;
-			if(p=='C' && q=='A') diff[3][i]++;
-			if(p=='T' && q=='C') diff[4][i]++;
-			if(p=='C' && q=='T') diff[5][i]++;
+		if(p!=q){
+			cum[0][f(p)][i]++;
+			cum[1][f(q)][i]++;
+
+			diff[f(p)][f(q)][i]++;
 		}
 	}
 }
 
 int get_distance(int x, int y) {
-	int numAT = diff[0][y], numTA = diff[1][y], numAC = diff[2][y];
-	int numCA = diff[3][y], numTC = diff[4][y], numCT = diff[5][y];
+	int numAT = diff[0][1][y], numTA = diff[1][0][y];
+	int numAC = diff[0][2][y], numCA = diff[2][0][y]; 
+	int numTC = diff[1][2][y], numCT = diff[2][1][y];
 	int numA1, numA2, numT1, numT2, numC1, numC2;
-	numA1 = cumA[0][y];
-	numA2 = cumA[1][y];
-	numT1 = cumT[0][y];
-	numT2 = cumT[1][y];
-	numC1 = cumC[0][y];
-	numC2 = cumC[1][y];
+	numA1 = cum[0][0][y];
+	numA2 = cum[1][0][y];
+	numT1 = cum[0][1][y];
+	numT2 = cum[1][1][y];
+	numC1 = cum[0][2][y];
+	numC2 = cum[1][2][y];
 
 	if(x > 0){
-		numA1 -= cumA[0][x-1];
-		numA2 -= cumA[1][x-1];
-		numT1 -= cumT[0][x-1];
-		numT2 -= cumT[1][x-1];
-		numC1 -= cumC[0][x-1];
-		numC2 -= cumC[1][x-1];
+		numA1 -= cum[0][0][x-1];
+		numA2 -= cum[1][0][x-1];
+		numT1 -= cum[0][1][x-1];
+		numT2 -= cum[1][1][x-1];
+		numC1 -= cum[0][2][x-1];
+		numC2 -= cum[1][2][x-1];
 
-		numAT -= diff[0][x-1];
-		numTA -= diff[1][x-1];
-		numAC -= diff[2][x-1];
-		numCA -= diff[3][x-1];
-		numTC -= diff[4][x-1];
-		numCT -= diff[5][x-1];
+		numAT -= diff[0][1][x-1];
+		numTA -= diff[1][0][x-1];
+		numAC -= diff[0][2][x-1];
+		numCA -= diff[2][0][x-1];
+		numTC -= diff[1][2][x-1];
+		numCT -= diff[2][1][x-1];
 	}
 	if(numA1==numA2 && numT1==numT2 && numC1==numC2){
 		int pairs = 0;
