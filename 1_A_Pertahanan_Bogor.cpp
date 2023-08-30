@@ -1,28 +1,48 @@
 #include <iostream>
+#include <cstring>
 using namespace std;
 
 // Subsoal 1, 2 & 3, N <= 17
 int n;
 int aman[200000]; 
 
-int kena_berapa_kali(int hari, int posisi){
-    int kena = 0;
-    if(posisi != aman[hari]) kena++;
-
-    if(hari == n-1) return kena;
-
-    int kena_berapa_kalau_ikut_arus = kena_berapa_kali(hari+1, posisi+1);
-    int kena_berapa_kalau_balik = kena_berapa_kali(hari+1, 1);
-
-    return kena + min(kena_berapa_kalau_ikut_arus, kena_berapa_kalau_balik);
-}
-
 int main(){
     cin >> n;
     for(int i = 0;i<n;i++) cin >> aman[i];
 
-    if(n <= 17){
-        cout << kena_berapa_kali(0, 1);
+    // Subtask 6: N <= 200
+    if(n <= 200){
+        int kena[n][n+1]; memset(kena, 0, sizeof(kena));
+        // kena[x][y] berarti hari ke-x posisi kapal di y
+
+        // hari pertama dulu, hari = 0
+        if(aman[0] == 1) kena[0][0] = 0;
+        else kena[0][1] = 1;
+        for(int posisi = 2; posisi <= n; posisi++) kena[0][posisi] = 1000000000;
+        
+        // hari-hari berikutnya, berdasarkan hari sebelumnya
+        for(int hari = 1; hari < n; hari++){
+            for(int posisi = 1; posisi <= n; posisi++) kena[hari][posisi] = 1000000000;
+
+            for(int posisi = 1; posisi <= n; posisi++){
+                for(int posisi_sebelumnya = 1; posisi_sebelumnya <= n; posisi_sebelumnya++){
+                    if(posisi != posisi_sebelumnya + 1 && posisi != 1)
+                        continue;
+
+                    int kenasekarang = 0;
+                    if(posisi != aman[hari]) kenasekarang = 1;
+
+                    kena[hari][posisi] = min(kena[hari][posisi], kenasekarang + kena[hari-1][posisi_sebelumnya]);
+                }
+            }
+        }
+
+        int jawaban = 1000000000;
+        for(int posisi = 1; posisi <= n; posisi++)
+            jawaban = min(jawaban, kena[n-1][posisi]);
+        
+        cout << jawaban;
+
         return 0;
     }
 
