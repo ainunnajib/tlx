@@ -27,6 +27,34 @@ int main(){
     }
 
     // Subtask 4: posisi aman sama setiap hari, selalu di titik yang sama
-    int posisi_aman = aman[0];
-    cout << n - n/posisi_aman;
+    bool semua_sama = true;
+    for(int i = 1;i<n;i++){
+        if(aman[i] != aman[0]){
+            semua_sama = false;
+            break;
+        }
+    }
+    if(semua_sama){
+        int posisi_aman = aman[0];
+        cout << n - n/posisi_aman;
+        return 0;
+    }
+    
+    // Subtask 5: posisi aman hanya ada 2 macam yaitu 1 atau 2
+    // kalau posisi aman berikutnya = 1, balik aja
+    // kalau posisi aman berikutnya = 2, dan sebelumnya balik, mengalir aja
+    // kalau posisi aman 2 masih muncul berturutan setelah mengalir, dibagi dua saja
+    int kena = 0;
+    if(aman[0] != 1) kena++;
+    int dua_berturut = 0;
+    for(int i=1;i<n;i++){
+        if(aman[i] == 2) dua_berturut++;
+        else {
+            kena += dua_berturut/2;
+            dua_berturut = 0;
+        }
+    }
+    kena += dua_berturut/2;
+
+    cout << kena;
 }
