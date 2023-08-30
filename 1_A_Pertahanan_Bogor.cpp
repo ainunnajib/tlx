@@ -3,7 +3,7 @@ using namespace std;
 
 // Subsoal 1, 2 & 3, N <= 17
 int n;
-int aman[17]; 
+int aman[200000]; 
 
 int kena_berapa_kali(int hari, int posisi){
     int kena = 0;
@@ -21,5 +21,12 @@ int main(){
     cin >> n;
     for(int i = 0;i<n;i++) cin >> aman[i];
 
-    cout << kena_berapa_kali(0, 1);
+    if(n <= 17){
+        cout << kena_berapa_kali(0, 1);
+        return 0;
+    }
+
+    // Subtask 4: posisi aman sama setiap hari, selalu di titik yang sama
+    int posisi_aman = aman[0];
+    cout << n - n/posisi_aman;
 }
