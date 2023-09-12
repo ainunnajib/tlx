@@ -9,10 +9,10 @@ int main(){
     int t[p], w[p];
     for(int i=0;i<p;i++) cin >> t[i] >> w[i];
 
-    //Subtask 8: n <= 200,000, X = Y always
-    // query always check within diagonal
+    //Subtask 9: n <= 200,000
+    // like subtask 8 but separate the t=1 & t=2
 
-    int tv[n+1];
+    int tv1[n+1], tv2[n+1];
 
     vector<int> w1, w2;
     for(int i=0;i<p;i++){
@@ -30,7 +30,7 @@ int main(){
             nyala = 1 - nyala;
             j--;
         }
-        tv[i] = nyala;
+        tv1[i] = nyala;
     }
 
     j = 0, nyala = 0;
@@ -39,14 +39,13 @@ int main(){
             nyala = 1 - nyala;
             j++;
         }
-        tv[i] += nyala;
-        tv[i] %= 2;
+        tv2[i] = nyala;
     }
 
     int q; cin >> q;
     int x, y;
     while(q--){
         cin >> x >> y;
-        cout << tv[x] << endl;
+        cout << (tv1[max(x,y)] + tv2[min(x,y)])%2 << endl;
     }
 }
