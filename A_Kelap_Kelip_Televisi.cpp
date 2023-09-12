@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstring>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
 int main(){
@@ -7,25 +9,44 @@ int main(){
     int t[p], w[p];
     for(int i=0;i<p;i++) cin >> t[i] >> w[i];
 
-    //Subtask 7: n <= 200,000, T always 1
-    // selalu pojok kiri atas --> radial ke kanan bawah
-    // hati-hati titik yang sama bisa diupdate berkali-kali
+    //Subtask 8: n <= 200,000, X = Y always
+    // query always check within diagonal
 
     int tv[n+1];
-    sort(w, w+p);
-    int j = p-1, nyala = 0;
+
+    vector<int> w1, w2;
+    for(int i=0;i<p;i++){
+        if(t[i] == 1)
+            w1.push_back(w[i]);
+        else
+            w2.push_back(w[i]);
+    }
+    sort(w1.begin(), w1.end());
+    sort(w2.begin(), w2.end());
+
+    int j = w1.size()-1, nyala = 0;
     for(int i=n;i>0;i--){
-        while(i == w[j]){
+        while(j >= 0 && i == w1[j]){
             nyala = 1 - nyala;
             j--;
         }
         tv[i] = nyala;
     }
 
+    j = 0, nyala = 0;
+    for(int i=1;i<=n;i++){
+        while(j < w2.size() && i == w2[j]){
+            nyala = 1 - nyala;
+            j++;
+        }
+        tv[i] += nyala;
+        tv[i] %= 2;
+    }
+
     int q; cin >> q;
     int x, y;
     while(q--){
         cin >> x >> y;
-        cout << tv[max(x, y)] << endl;
+        cout << tv[x] << endl;
     }
 }
