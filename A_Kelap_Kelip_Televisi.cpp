@@ -2,6 +2,7 @@
 #include <cstring>
 #include <vector>
 #include <algorithm>
+#include <map>
 using namespace std;
 
 int main(){
@@ -9,10 +10,11 @@ int main(){
     int t[p], w[p];
     for(int i=0;i<p;i++) cin >> t[i] >> w[i];
 
-    //Subtask 9: n <= 200,000
-    // like subtask 8 but separate the t=1 & t=2
+    //Subtask 10: ultimate solution
+    // like subtask 9 but cannot use array
+    // use map, record sparsely, binary search
 
-    int tv1[n+1], tv2[n+1];
+    map<int, int> tv1, tv2;
 
     vector<int> w1, w2;
     for(int i=0;i<p;i++){
@@ -24,28 +26,24 @@ int main(){
     sort(w1.begin(), w1.end());
     sort(w2.begin(), w2.end());
 
-    int j = w1.size()-1, nyala = 0;
-    for(int i=n;i>0;i--){
-        while(j >= 0 && i == w1[j]){
-            nyala = 1 - nyala;
-            j--;
-        }
-        tv1[i] = nyala;
+    int nyala = 0;
+    for(int j = w1.size()-1; j >= 0; j--){
+        nyala = 1 - nyala;
+        tv1[w1[j]] = nyala;
     }
+    tv1[n+1] = 0;
 
-    j = 0, nyala = 0;
-    for(int i=1;i<=n;i++){
-        while(j < w2.size() && i == w2[j]){
-            nyala = 1 - nyala;
-            j++;
-        }
-        tv2[i] = nyala;
+    nyala = 0;
+    for(int j = 0; j < w2.size(); j++){
+        nyala = 1 - nyala;
+        tv2[-w2[j]] = nyala;
     }
+    tv2[0] = 0;
 
     int q; cin >> q;
     int x, y;
     while(q--){
         cin >> x >> y;
-        cout << (tv1[max(x,y)] + tv2[min(x,y)])%2 << endl;
+        cout << (tv1.lower_bound(max(x,y))->second + tv2.lower_bound(-min(x,y))->second)%2 << endl;
     }
 }
